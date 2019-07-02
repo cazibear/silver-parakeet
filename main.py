@@ -7,10 +7,7 @@ import os
 from datetime import datetime
 
 API_BASE = "http://transportapi.com/v3/uk/"
-CREDENTIALS = {
-	# "app_id": "7b97f82b",
-	# "app_key": "3b4065e1c0550d31d36204941a214ee0"
-}
+CREDENTIALS = {}
 
 
 def log(string):
@@ -53,7 +50,7 @@ def station_info(name):
 		return error
 
 
-def station_departures(name, search=False):
+def station_departures(name):
 	if len(name) > 3:
 		print("get_crs")
 		name = get_codes(name)[0]
@@ -78,11 +75,11 @@ def load_config():
 	config = configparser.ConfigParser()
 	try:
 		config.read("config.txt")
-		id = config.get("credentials", "id")
-		key = config.get("credentials", "key")
+		app_id = config.get("credentials", "id")
+		app_key = config.get("credentials", "key")
 
-		CREDENTIALS["app_id"] = id
-		CREDENTIALS["app_key"] = key
+		CREDENTIALS["app_id"] = app_id
+		CREDENTIALS["app_key"] = app_key
 	except configparser.NoSectionError:
 		print("Config file does not have the required sections.")
 		exit(1)
@@ -104,7 +101,10 @@ def main():
 			p.print_station(data)
 		elif method == "departures":
 			data = station_departures(argv[2])
-			p.print_station_departures(data)
+			if len(argv) == 4:
+				p.print_station_departures(data, search=argv[3])
+			else:
+				p.print_station_departures(data)
 		elif method == "load":
 			file_path = argv[2]  # gets the file path from second argument
 			# get the directory not the file name (will only work on unix filesystems for now)

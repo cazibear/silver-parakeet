@@ -4,6 +4,7 @@ from requests import get
 
 class Printer:
 	def print_station(self, json):
+		# pprint.pprint(json)
 		print("Station:", json["member"][0]["name"])
 		print("-" * (9 + len(json["member"][0]["name"])))
 		print("Station code:", json["member"][0]["station_code"])
@@ -14,23 +15,26 @@ class Printer:
 
 	def print_station_departures(self, json, search=False):
 		# pprint.pprint(json)
-		print("Station:", json["station_name"] + "\n" + "=" * (9 + len(json["station_name"])))
+		found = False
+
+		print("Station:", json["station_name"])
+		print("=" * (9 + len(json["station_name"])))
 		print()
-		print("Departures:\n" + "-" * 14)
 		for departure in json["departures"]["all"]:
 			stations = self.calling_stations(departure["service_timetable"]["id"])
-			if search is not False and \
-				(search != departure["destination_name"] or list(filter(lambda x: search in x, stations))):
-				# if searching and (neither departure matches or one of the stops does)
+
+			if not any([str(search).lower() in s["name"].lower() for s in stations]):
+				found = True
 				continue
-			else:
-				# otherwise print the departure
-				print("Destination:", departure["destination_name"])
-				print("-" * (13 + len(departure["destination_name"])))
-				print("Leaving at:", departure["aimed_departure_time"], "on", "platform", departure["platform"])
-				print("Calling at:")
-				for s in stations:
-					print(s)
+			# print the departure
+			print("Destination:", departure["destination_name"])
+			print("-" * (13 + len(departure["destination_name"])))
+			print("Leaving at:", departure["aimed_departure_time"], "on", "platform", departure["platform"])
+			print("Calling at:")
+			for s in stations:
+				print(s["time"], "-", s["name"])
+			print()  # newline
+		if not found:
 			print()
 
 	def calling_stations(self, endpoint):
@@ -44,9 +48,13 @@ class Printer:
 				if first:
 					first = False
 				else:
-					pair = " - ".join([stop["aimed_arrival_time"], stop["station_name"]])
-					# time - station
-					output.append(pair)
+					if type(stop["aimed_arrival_time"]) is None:
+						continue
+					data = {
+						"time": stop["aimed_arrival_time"],
+						"name": stop["station_name"]
+					}
+					output.append(data)
 			return output
 		else:
 			return "There was an error with the timetable id"
