@@ -20,17 +20,25 @@ class Printer:
 		print("Station:", json["station_name"])
 		print("=" * (9 + len(json["station_name"])))
 		print()
+		if not json["departures"]["all"]:
+			print(json)
+			return
+
 		for departure in json["departures"]["all"]:
 			stations = self.calling_stations(departure["service_timetable"]["id"])
 
-			if not any([str(search).lower() in s["name"].lower() for s in stations]):
-				found = True
-				continue
+			if type(search) != bool:
+				if not any([str(search).lower() in s["name"].lower() for s in stations]):
+					found = True
+					continue
+
 			# print the departure
 			print("Destination:", departure["destination_name"])
 			print("-" * (13 + len(departure["destination_name"])))
 			print("Leaving at:", departure["aimed_departure_time"], "on", "platform", departure["platform"])
 			print("Calling at:")
+
+			# printing stations
 			for s in stations:
 				print(s["time"], "-", s["name"])
 			print()  # newline
