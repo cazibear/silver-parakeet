@@ -40,7 +40,12 @@ class Printer:
 
 			# printing stations
 			for s in stations:
-				print(s["time"], "-", s["name"])
+				if s["name"] == departure["destination_name"]:
+					print("->", s["time"], "-", s["name"])
+				elif s["name"] == json["station_name"]:
+					print("<-", s["time"], "-", json["station_name"])
+				else:
+					print("  ", s["time"], "-", s["name"])
 			print()  # newline
 		if not found:
 			print()

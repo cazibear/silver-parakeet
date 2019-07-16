@@ -108,10 +108,9 @@ def main():
 		elif method == "load":
 			file_path = argv[2]  # gets the file path from second argument
 			# get the directory not the file name (will only work on unix filesystems for now)
-			directory = file_path.split("/")[-2]
-			file = open(file_path)
-			print(json.load(file))
+			directory = file_path.split("/")[1]
 			data = json.load(open(file_path))
+
 			if directory == "info":
 				p.print_station(data)
 			elif directory == "departures":
