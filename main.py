@@ -60,7 +60,10 @@ def station_departures(name):
 	log("Request made to " + response.url + " Status code: " + str(response.status_code))
 
 	if response.status_code == 200:
-		return response.json()
+		data = response.json()
+		for departure in data["departures"]["all"]:
+			departure["stations"] = calling_at(departure["service_timetable"]["id"])
+		return data
 	else:
 		error = {
 			"error:": True,
@@ -151,6 +154,29 @@ def main():
 		# print(codes, type(codes))
 		time = datetime.today()
 		print(time.strftime("%Y-%m-%d_%H-%M"))
+
+
+def calling_at(endpoint):
+	"""Gets the calling stations from the API's provided endpoint"""
+	response = get(endpoint)  # no need to add credentials as they should be there
+	if response.status_code == 200:
+		# pprint(response.json())
+		output = []
+		first = True
+		for stop in response.json()["stops"]:
+			if first:
+				first = False
+			else:
+				if type(stop["aimed_arrival_time"]) is None:
+					continue
+				data = {
+					"time": stop["aimed_arrival_time"],
+					"name": stop["station_name"]
+				}
+				output.append(data)
+		return output
+	else:
+		return "There was an error with the timetable id"
 
 
 if __name__ == "__main__":

@@ -26,8 +26,6 @@ class Printer:
 			return
 
 		for departure in json["departures"]["all"]:
-			stations = self.calling_stations(departure["service_timetable"]["id"])
-
 			if type(search) != bool:
 				if not any([str(search).lower() in s["name"].lower() for s in stations]):
 					found = True
@@ -66,35 +64,13 @@ class Printer:
 			print("Calling at:")
 
 			# printing stations
-			for s in stations:
-				if s["name"] == departure["destination_name"]:
-					print("->", s["time"], "-", s["name"])
-				elif s["name"] == json["station_name"]:
-					print("<-", s["time"], "-", json["station_name"])
+			for stations in departure["stations"]:
+				if stations["name"] == departure["destination_name"]:
+					print(stations["time"], "-", stations["name"])
+				elif stations["name"] == json["station_name"]:
+					print(stations["time"], "-", json["station_name"])
 				else:
-					print("  ", s["time"], "-", s["name"])
+					print(stations["time"], "-", stations["name"])
 			print()  # newline
 		if not found:
 			print()
-
-	def calling_stations(self, endpoint):
-		"""Gets the calling stations from the API's provided endpoint"""
-		response = get(endpoint)  # no need to add credentials as they should be there
-		if response.status_code == 200:
-			# pprint(response.json())
-			output = []
-			first = True
-			for stop in response.json()["stops"]:
-				if first:
-					first = False
-				else:
-					if type(stop["aimed_arrival_time"]) is None:
-						continue
-					data = {
-						"time": stop["aimed_arrival_time"],
-						"name": stop["station_name"]
-					}
-					output.append(data)
-			return output
-		else:
-			return "There was an error with the timetable id"
