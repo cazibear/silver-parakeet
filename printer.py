@@ -27,7 +27,7 @@ class Printer:
 
 		for departure in json["departures"]["all"]:
 			if type(search) != bool:
-				if not any([str(search).lower() in s["name"].lower() for s in stations]):
+				if not any([str(search).lower() in s["name"].lower() for s in departure["stations"]]):
 					found = True
 					continue
 
