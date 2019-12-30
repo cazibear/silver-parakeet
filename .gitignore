@@ -1,6 +1,7 @@
 .idea/
 __pycache__/
-saved/
+.vscode/
 
+saved/
 config.txt
 log.txt
