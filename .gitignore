@@ -3,5 +3,4 @@ __pycache__/
 .vscode/
 
 saved/
-config.txt
 log.txt
