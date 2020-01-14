@@ -78,8 +78,8 @@ def load_config():
 	config = configparser.ConfigParser()
 	try:
 		config.read("config.txt")
-		app_id = config.get("credentials", "id")
-		app_key = config.get("credentials", "key")
+		app_id  = config.get("credentials", "app_id")
+		app_key = config.get("credentials", "app_key")
 
 		CREDENTIALS["app_id"] = app_id
 		CREDENTIALS["app_key"] = app_key
